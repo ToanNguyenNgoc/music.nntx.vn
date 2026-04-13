@@ -51,11 +51,11 @@ export const MusicListItem = memo(({ music, index, onDelete, onDragEnd, isDragga
   const content = (
     <div
       onClick={handleItemClick}
-      className={`group flex items-center gap-4 px-4 py-2 rounded-md hover:bg-white/10 transition-all cursor-pointer ${isCurrent ? 'bg-white/5' : ''} select-none active:scale-[0.99]`}
+      className={`group flex items-center gap-4 px-4 py-2 rounded-md hover:bg-black/5 dark:hover:bg-white/10 transition-all cursor-pointer ${isCurrent ? 'bg-black/5 dark:bg-white/5' : ''} select-none active:scale-[0.99]`}
     >
       {isDraggable && (
         <div 
-          className="cursor-grab active:cursor-grabbing text-spotify-gray hover:text-white p-1 touch-none"
+          className="cursor-grab active:cursor-grabbing text-spotify-gray hover:text-app-text p-1 touch-none"
           onPointerDown={(e) => dragControls.start(e)}
         >
           <GripVertical size={16} />
@@ -76,7 +76,7 @@ export const MusicListItem = memo(({ music, index, onDelete, onDragEnd, isDragga
           isLoading={isCurrent && isLoading}
           onClick={handlePlay}
           size={16}
-          className="text-white"
+          className="text-app-text"
         />
       </div>
 
@@ -88,10 +88,10 @@ export const MusicListItem = memo(({ music, index, onDelete, onDragEnd, isDragga
           referrerPolicy="no-referrer"
         />
         <div className="flex flex-col min-w-0">
-          <span className={`text-sm font-medium truncate ${isCurrent ? 'text-spotify-green' : 'text-white'}`}>
+          <span className={`text-sm font-medium truncate ${isCurrent ? 'text-spotify-green' : 'text-app-text'}`}>
             {music.name}
           </span>
-          <span className="text-xs text-spotify-gray truncate group-hover:text-white transition-colors">
+          <span className="text-xs text-spotify-gray truncate group-hover:text-app-text transition-colors">
             {music.title}
           </span>
         </div>

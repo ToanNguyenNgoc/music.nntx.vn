@@ -37,21 +37,21 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-md bg-spotify-dark border border-white/10 rounded-2xl p-8 shadow-2xl"
+            className="relative w-full max-w-md bg-spotify-dark border border-black/10 dark:border-white/10 rounded-2xl p-8 shadow-2xl transition-colors duration-300"
           >
             <div className="flex flex-col items-center text-center">
               <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center text-red-500 mb-6">
                 <AlertTriangle size={32} />
               </div>
               
-              <h2 className="text-2xl font-bold text-white mb-2">{title}</h2>
+              <h2 className="text-2xl font-bold text-app-text mb-2">{title}</h2>
               <p className="text-spotify-gray mb-8">{description}</p>
               
               <div className="flex items-center gap-4 w-full">
                 <button
                   onClick={onClose}
                   disabled={loading}
-                  className="flex-1 py-3 px-6 rounded-full font-bold text-white bg-white/5 hover:bg-white/10 transition-colors disabled:opacity-50"
+                  className="flex-1 py-3 px-6 rounded-full font-bold text-app-text bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors disabled:opacity-50"
                 >
                   Cancel
                 </button>

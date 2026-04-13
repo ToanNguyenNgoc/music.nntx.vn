@@ -180,7 +180,7 @@ export const MusicList = () => {
         <p className="text-red-500 font-medium">{error}</p>
         <button 
           onClick={() => window.location.reload()}
-          className="bg-white text-black px-6 py-2 rounded-full font-bold hover:scale-105 transition-transform"
+          className="bg-app-text text-spotify-black px-6 py-2 rounded-full font-bold hover:scale-105 transition-transform"
         >
           Retry
         </button>
@@ -189,12 +189,12 @@ export const MusicList = () => {
   }
 
   return (
-    <div className="flex-1 min-h-0 overflow-y-auto p-4 md:p-8 spotify-gradient">
+    <div className="flex-1 min-h-0 overflow-y-auto p-4 md:p-8 spotify-gradient transition-colors duration-300">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
           <div className="flex items-center justify-between w-full md:w-auto">
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Good day</h1>
+              <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-app-text">Good day</h1>
               {isSyncing && (
                 <div className="flex items-center gap-2 text-spotify-green text-xs font-medium animate-pulse">
                   <Loader2 size={14} className="animate-spin" />
@@ -202,16 +202,16 @@ export const MusicList = () => {
                 </div>
               )}
             </div>
-            <div className="md:hidden flex items-center bg-spotify-light rounded-full p-1">
+            <div className="md:hidden flex items-center bg-spotify-light rounded-full p-1 transition-colors">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-1.5 rounded-full transition-colors ${viewMode === 'grid' ? 'bg-white/10 text-white' : 'text-spotify-gray hover:text-white'}`}
+                className={`p-1.5 rounded-full transition-colors ${viewMode === 'grid' ? 'bg-black/10 dark:bg-white/10 text-app-text' : 'text-spotify-gray hover:text-app-text'}`}
               >
                 <LayoutGrid size={18} />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-1.5 rounded-full transition-colors ${viewMode === 'list' ? 'bg-white/10 text-white' : 'text-spotify-gray hover:text-white'}`}
+                className={`p-1.5 rounded-full transition-colors ${viewMode === 'list' ? 'bg-black/10 dark:bg-white/10 text-app-text' : 'text-spotify-gray hover:text-app-text'}`}
               >
                 <List size={18} />
               </button>
@@ -220,17 +220,17 @@ export const MusicList = () => {
           
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
             {/* View Toggle - Desktop */}
-            <div className="hidden md:flex items-center bg-spotify-light rounded-full p-1">
+            <div className="hidden md:flex items-center bg-spotify-light rounded-full p-1 transition-colors">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-1.5 rounded-full transition-colors ${viewMode === 'grid' ? 'bg-white/10 text-white' : 'text-spotify-gray hover:text-white'}`}
+                className={`p-1.5 rounded-full transition-colors ${viewMode === 'grid' ? 'bg-black/10 dark:bg-white/10 text-app-text' : 'text-spotify-gray hover:text-app-text'}`}
                 title="Grid View"
               >
                 <LayoutGrid size={18} />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-1.5 rounded-full transition-colors ${viewMode === 'list' ? 'bg-white/10 text-white' : 'text-spotify-gray hover:text-white'}`}
+                className={`p-1.5 rounded-full transition-colors ${viewMode === 'list' ? 'bg-black/10 dark:bg-white/10 text-app-text' : 'text-spotify-gray hover:text-app-text'}`}
                 title="List View"
               >
                 <List size={18} />
@@ -239,27 +239,27 @@ export const MusicList = () => {
 
             {/* Search Bar */}
             <div className="relative group w-full sm:w-auto">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-spotify-gray group-focus-within:text-white transition-colors" size={18} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-spotify-gray group-focus-within:text-app-text transition-colors" size={18} />
               <input
                 type="text"
                 placeholder="Search songs..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-spotify-light border-none rounded-full py-2 pl-10 pr-4 w-full sm:w-64 text-sm focus:ring-2 focus:ring-white/20 transition-all outline-none"
+                className="bg-spotify-light border-none rounded-full py-2 pl-10 pr-4 w-full sm:w-64 text-sm focus:ring-2 focus:ring-black/10 dark:focus:ring-white/20 transition-all outline-none text-app-text"
               />
             </div>
 
             {/* Sort Dropdown */}
-            <div className="flex items-center gap-2 bg-spotify-light rounded-full px-4 py-2 w-full sm:w-auto">
+            <div className="flex items-center gap-2 bg-spotify-light rounded-full px-4 py-2 w-full sm:w-auto transition-colors">
               <SlidersHorizontal size={16} className="text-spotify-gray" />
               <select 
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="bg-transparent text-sm font-medium outline-none cursor-pointer flex-1"
+                className="bg-transparent text-sm font-medium outline-none cursor-pointer flex-1 text-app-text"
               >
-                <option value="priority">Custom Order</option>
-                <option value="newest">Newest</option>
-                <option value="name">A-Z</option>
+                <option value="priority" className="bg-spotify-light">Custom Order</option>
+                <option value="newest" className="bg-spotify-light">Newest</option>
+                <option value="name" className="bg-spotify-light">A-Z</option>
               </select>
             </div>
           </div>

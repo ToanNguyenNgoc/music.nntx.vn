@@ -2,16 +2,36 @@
 
 @theme {
   --color-spotify-green: #1db954;
-  --color-spotify-black: #121212;
-  --color-spotify-dark: #181818;
-  --color-spotify-light: #282828;
-  --color-spotify-gray: #b3b3b3;
+  --color-spotify-black: var(--app-bg);
+  --color-spotify-dark: var(--app-surface);
+  --color-spotify-light: var(--app-elevated);
+  --color-spotify-gray: var(--app-text-muted);
+  
+  /* Semantic colors */
+  --color-app-text: var(--app-text);
+}
+
+:root {
+  --app-bg: #ffffff;
+  --app-surface: #f8f8f8;
+  --app-elevated: #efefef;
+  --app-text: #121212;
+  --app-text-muted: #535353;
+}
+
+.dark {
+  --app-bg: #121212;
+  --app-surface: #181818;
+  --app-elevated: #282828;
+  --app-text: #ffffff;
+  --app-text-muted: #b3b3b3;
 }
 
 @layer base {
   body {
-    @apply bg-spotify-black text-white selection:bg-spotify-green/30;
+    @apply bg-spotify-black text-app-text selection:bg-spotify-green/30;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   /* Custom Scrollbar */
@@ -24,14 +44,15 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #5a5a5a;
+    background: var(--app-text-muted);
+    opacity: 0.5;
     border-radius: 6px;
     border: 3px solid transparent;
     background-clip: content-box;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #888;
+    background: var(--app-text);
     background-clip: content-box;
   }
 }
@@ -41,7 +62,7 @@
 }
 
 .spotify-gradient {
-  background: linear-gradient(to bottom, #282828 0%, #121212 100%);
+  background: linear-gradient(to bottom, var(--app-elevated) 0%, var(--app-bg) 100%);
 }
 
 .text-shadow {

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, User as UserIcon, LogOut, User, ExternalLink } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useAppStore } from '../../store/useAppStore';
+import { ThemeToggle } from '../UI/ThemeToggle';
 
 export const Header = () => {
   const { user, logout } = useAuthStore();
@@ -31,6 +32,8 @@ export const Header = () => {
       </div>
 
       <div className="flex items-center gap-2 md:gap-4">
+        <ThemeToggle />
+        
         <button className="bg-white text-black font-bold py-1.5 px-4 md:px-6 rounded-full hover:scale-105 transition-transform text-xs md:text-sm hidden sm:block">
           Explore Premium
         </button>

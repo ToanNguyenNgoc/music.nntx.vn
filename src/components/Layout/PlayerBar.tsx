@@ -39,11 +39,11 @@ export const PlayerBar = () => {
 
   return (
     <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-50 px-2 md:px-0">
-      <div className="h-16 md:h-24 bg-spotify-light/95 md:bg-black backdrop-blur-md md:backdrop-blur-none border-t border-white/5 md:border-white/10 px-4 flex items-center justify-between rounded-lg md:rounded-none shadow-2xl md:shadow-none">
+      <div className="h-16 md:h-24 bg-spotify-dark/95 md:bg-spotify-black backdrop-blur-md md:backdrop-blur-none border-t border-black/5 dark:border-white/5 px-4 flex items-center justify-between rounded-lg md:rounded-none shadow-2xl md:shadow-none transition-colors duration-300">
         {/* Mobile Progress Bar (Top of bar) */}
-        <div className="md:hidden absolute top-0 left-0 right-0 h-0.5 bg-white/10 overflow-hidden rounded-t-lg">
+        <div className="md:hidden absolute top-0 left-0 right-0 h-0.5 bg-black/10 dark:bg-white/10 overflow-hidden rounded-t-lg">
           <div 
-            className={`h-full bg-white transition-all duration-100 ${isLoading ? 'animate-pulse bg-spotify-green' : ''}`}
+            className={`h-full bg-app-text transition-all duration-100 ${isLoading ? 'animate-pulse bg-spotify-green' : ''}`}
             style={{ width: `${(currentTime / (duration || 1)) * 100}%` }}
           />
         </div>
@@ -59,13 +59,13 @@ export const PlayerBar = () => {
             />
             {isLoading && (
               <div className="absolute inset-0 flex items-center justify-center">
-                <Loader2 size={20} className="text-white animate-spin" />
+                <Loader2 size={20} className="text-app-text animate-spin" />
               </div>
             )}
           </div>
           <div className="flex flex-col overflow-hidden">
             <div className="flex items-center gap-2 overflow-hidden">
-              <span className="text-sm font-medium text-white truncate">
+              <span className="text-sm font-medium text-app-text truncate">
                 {currentMusic.name}
               </span>
               <NowPlayingIndicator isPlaying={isPlaying} className="scale-50 origin-left flex-shrink-0" />
@@ -81,13 +81,13 @@ export const PlayerBar = () => {
           <div className="flex items-center gap-6">
             <button 
               onClick={() => setIsShuffle(!isShuffle)}
-              className={`${isShuffle ? 'text-spotify-green' : 'text-spotify-gray'} hover:text-white transition-colors`}
+              className={`${isShuffle ? 'text-spotify-green' : 'text-spotify-gray'} hover:text-app-text transition-colors`}
             >
               <Shuffle size={18} />
             </button>
             <button 
               onClick={playPrevious}
-              className="text-spotify-gray hover:text-white transition-colors"
+              className="text-spotify-gray hover:text-app-text transition-colors"
             >
               <SkipBack size={24} fill="currentColor" />
             </button>
@@ -96,17 +96,17 @@ export const PlayerBar = () => {
               isLoading={isLoading}
               onClick={() => setIsPlaying(!isPlaying)}
               size={20}
-              className="w-8 h-8 rounded-full bg-white text-black shadow-lg"
+              className="w-8 h-8 rounded-full bg-app-text text-spotify-black shadow-lg transition-colors"
             />
             <button 
               onClick={playNext}
-              className="text-spotify-gray hover:text-white transition-colors"
+              className="text-spotify-gray hover:text-app-text transition-colors"
             >
               <SkipForward size={24} fill="currentColor" />
             </button>
             <button 
               onClick={() => setRepeatMode(repeatMode === 'none' ? 'all' : repeatMode === 'all' ? 'one' : 'none')}
-              className={`${repeatMode !== 'none' ? 'text-spotify-green' : 'text-spotify-gray'} hover:text-white transition-colors relative`}
+              className={`${repeatMode !== 'none' ? 'text-spotify-green' : 'text-spotify-gray'} hover:text-app-text transition-colors relative`}
             >
               <Repeat size={18} />
               {repeatMode === 'one' && <span className="absolute -top-1 -right-1 text-[8px] font-bold">1</span>}
@@ -117,7 +117,7 @@ export const PlayerBar = () => {
             <span className="text-[10px] text-spotify-gray w-10 text-right">
               {formatTime(currentTime)}
             </span>
-            <div className="flex-1 h-1 bg-spotify-light rounded-full relative group cursor-pointer">
+            <div className="flex-1 h-1 bg-spotify-light rounded-full relative group cursor-pointer transition-colors">
               <input
                 type="range"
                 min={0}
@@ -127,10 +127,10 @@ export const PlayerBar = () => {
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
               />
               <div 
-                className={`h-full bg-white group-hover:bg-spotify-green rounded-full relative ${isLoading ? 'bg-spotify-green/50' : ''}`}
+                className={`h-full bg-app-text group-hover:bg-spotify-green rounded-full relative transition-colors ${isLoading ? 'bg-spotify-green/50' : ''}`}
                 style={{ width: `${(currentTime / (duration || 1)) * 100}%` }}
               >
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full opacity-0 group-hover:opacity-100 shadow-xl" />
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-app-text rounded-full opacity-0 group-hover:opacity-100 shadow-xl transition-colors" />
               </div>
             </div>
             <span className="text-[10px] text-spotify-gray w-10">
@@ -145,23 +145,23 @@ export const PlayerBar = () => {
             isLoading={isLoading}
             onClick={() => setIsPlaying(!isPlaying)}
             size={28}
-            className="text-white p-2"
+            className="text-app-text p-2 transition-colors"
           />
         </div>
 
         {/* Volume & Extra Controls - Desktop */}
         <div className="hidden md:flex items-center justify-end gap-3 w-[30%]">
-          <button className="text-spotify-gray hover:text-white transition-colors">
+          <button className="text-spotify-gray hover:text-app-text transition-colors">
             <ListMusic size={18} />
           </button>
           <div className="flex items-center gap-2 w-32">
             <button 
               onClick={() => setIsMuted(!isMuted)}
-              className="text-spotify-gray hover:text-white transition-colors"
+              className="text-spotify-gray hover:text-app-text transition-colors"
             >
               {isMuted || volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
             </button>
-            <div className="flex-1 h-1 bg-spotify-light rounded-full relative group cursor-pointer">
+            <div className="flex-1 h-1 bg-spotify-light rounded-full relative group cursor-pointer transition-colors">
               <input
                 type="range"
                 min={0}
@@ -172,10 +172,10 @@ export const PlayerBar = () => {
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
               />
               <div 
-                className="h-full bg-white group-hover:bg-spotify-green rounded-full relative"
+                className="h-full bg-app-text group-hover:bg-spotify-green rounded-full relative transition-colors"
                 style={{ width: `${(isMuted ? 0 : volume) * 100}%` }}
               >
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full opacity-0 group-hover:opacity-100 shadow-xl" />
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-app-text rounded-full opacity-0 group-hover:opacity-100 shadow-xl transition-colors" />
               </div>
             </div>
           </div>

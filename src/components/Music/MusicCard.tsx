@@ -45,7 +45,7 @@ export const MusicCard: React.FC<MusicCardProps> = ({ music, onDelete }) => {
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -4 }}
       onClick={handleCardClick}
-      className="bg-spotify-dark p-4 rounded-lg hover:bg-spotify-light transition-all duration-300 group cursor-pointer relative"
+      className="bg-spotify-dark p-4 rounded-lg hover:bg-spotify-light border border-black/5 dark:border-white/5 transition-all duration-300 group cursor-pointer relative"
     >
       <div className="relative aspect-square mb-4 shadow-2xl">
         <img
@@ -76,7 +76,7 @@ export const MusicCard: React.FC<MusicCardProps> = ({ music, onDelete }) => {
 
       <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between gap-2">
-          <h3 className={`font-bold text-sm truncate flex-1 ${isCurrent ? 'text-spotify-green' : 'text-white'}`}>
+          <h3 className={`font-bold text-sm truncate flex-1 ${isCurrent ? 'text-spotify-green' : 'text-app-text'}`}>
             {music.name}
           </h3>
           {isCurrent && <NowPlayingIndicator isPlaying={isActive} className="scale-75 origin-right" />}

@@ -16,11 +16,15 @@ import { ProfileView } from './components/Auth/ProfileView';
 import { LoginForm } from './components/Auth/LoginForm';
 import { RegisterForm } from './components/Auth/RegisterForm';
 import { useTitleSync } from './hooks/useTitleSync';
+import { useThemeInit } from './hooks/useThemeInit';
 
 export default function App() {
   const { isAuthenticated } = useAuthStore();
   const { currentView } = useAppStore();
   const [authMode, setAuthMode] = React.useState<'login' | 'register'>('login');
+
+  // Initialize theme
+  useThemeInit();
 
   // Sync tab title with current music
   useTitleSync();
@@ -45,7 +49,7 @@ export default function App() {
   };
 
   return (
-    <div className="flex h-screen bg-black overflow-hidden select-none">
+    <div className="flex h-screen bg-spotify-black overflow-hidden select-none transition-colors duration-300">
       {/* Sidebar - Hidden on mobile */}
       <div className="hidden md:flex">
         <Sidebar />

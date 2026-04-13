@@ -54,17 +54,17 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black p-4">
+    <div className="min-h-screen flex items-center justify-center bg-spotify-black p-4 transition-colors duration-300">
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-md bg-spotify-dark p-6 sm:p-10 rounded-xl shadow-2xl border border-white/5"
+        className="w-full max-w-md bg-spotify-dark p-6 sm:p-10 rounded-xl shadow-2xl border border-black/5 dark:border-white/5 transition-colors duration-300"
       >
         <div className="flex flex-col items-center mb-8">
           <div className="w-16 h-16 bg-spotify-green rounded-full flex items-center justify-center mb-4 shadow-lg shadow-spotify-green/20">
             <MusicIcon size={32} className="text-black" />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">Sign up for Spotify</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-app-text transition-colors">Sign up for Spotify</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -83,7 +83,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
               required
               value={fullname}
               onChange={(e) => setFullname(e.target.value)}
-              className="w-full bg-spotify-light border border-white/10 rounded-md py-3 px-4 focus:ring-2 focus:ring-white/20 outline-none transition-all"
+              className="w-full bg-spotify-light border border-black/10 dark:border-white/10 rounded-md py-3 px-4 focus:ring-2 focus:ring-black/10 dark:focus:ring-white/20 outline-none transition-all text-app-text"
               placeholder="Enter your full name"
             />
           </div>
@@ -97,7 +97,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-spotify-light border border-white/10 rounded-md py-3 px-4 focus:ring-2 focus:ring-white/20 outline-none transition-all"
+              className="w-full bg-spotify-light border border-black/10 dark:border-white/10 rounded-md py-3 px-4 focus:ring-2 focus:ring-black/10 dark:focus:ring-white/20 outline-none transition-all text-app-text"
               placeholder="Email address"
             />
           </div>
@@ -112,13 +112,13 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-spotify-light border border-white/10 rounded-md py-3 px-4 focus:ring-2 focus:ring-white/20 outline-none transition-all pr-12"
+                className="w-full bg-spotify-light border border-black/10 dark:border-white/10 rounded-md py-3 px-4 focus:ring-2 focus:ring-black/10 dark:focus:ring-white/20 outline-none transition-all pr-12 text-app-text"
                 placeholder="Create a password"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-spotify-gray hover:text-white transition-colors"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-spotify-gray hover:text-app-text transition-colors"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
@@ -134,7 +134,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full bg-spotify-light border border-white/10 rounded-md py-3 px-4 focus:ring-2 focus:ring-white/20 outline-none transition-all"
+              className="w-full bg-spotify-light border border-black/10 dark:border-white/10 rounded-md py-3 px-4 focus:ring-2 focus:ring-black/10 dark:focus:ring-white/20 outline-none transition-all text-app-text"
               placeholder="Confirm your password"
             />
           </div>
@@ -148,9 +148,9 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
           </button>
         </form>
 
-        <div className="mt-8 pt-8 border-t border-white/10 text-center">
+        <div className="mt-8 pt-8 border-t border-black/10 dark:border-white/10 text-center">
           <p className="text-spotify-gray text-sm">
-            Already have an account? <span onClick={onSwitchToLogin} className="text-white hover:text-spotify-green cursor-pointer underline font-bold">Log in</span>
+            Already have an account? <span onClick={onSwitchToLogin} className="text-app-text hover:text-spotify-green cursor-pointer underline font-bold transition-colors">Log in</span>
           </p>
         </div>
       </motion.div>
