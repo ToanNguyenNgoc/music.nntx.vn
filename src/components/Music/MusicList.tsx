@@ -6,8 +6,26 @@ import { MusicListItem } from './MusicListItem';
 import { ConfirmModal } from '../UI/ConfirmModal';
 import { usePlayerStore } from '../../store/usePlayerStore';
 import { useAppStore } from '../../store/useAppStore';
-import { Search, SlidersHorizontal, Loader2, LayoutGrid, List, Save } from 'lucide-react';
-import { Reorder } from 'motion/react';
+import { Search, SlidersHorizontal, Loader2, LayoutGrid, List } from 'lucide-react';
+import { 
+  DndContext, 
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  DragStartEvent,
+  DragOverlay,
+  defaultDropAnimationSideEffects,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { restrictToVerticalAxis, restrictToWindowEdges } from '@dnd-kit/modifiers';
 
 export const MusicList = () => {
   const [musics, setMusics] = useState<Music[]>([]);
@@ -23,23 +41,34 @@ export const MusicList = () => {
 
   // Reorder state
   const [isSyncing, setIsSyncing] = useState(false);
+  const [activeId, setActiveId] = useState<number | null>(null);
   const previousMusicsRef = useRef<Music[]>([]);
 
-  const { setQueue, currentMusic, playNext, setIsPlaying, getNextMusic } = usePlayerStore();
+  const { setQueue, currentMusic, playNext, setIsPlaying } = usePlayerStore();
   const { refreshTrigger, viewMode, setViewMode, triggerRefresh } = useAppStore();
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   useEffect(() => {
     const fetchMusics = async () => {
       try {
         setLoading(true);
-        const response = await musicService.getMusics(1, 100);
+        const response = await musicService.getMusics(1, 100, '-priority');
         if (response.success) {
           const data = response.context.data;
           setMusics(data);
           setQueue(data);
           previousMusicsRef.current = data;
 
-          // Preload first track metadata if nothing is playing
           if (!currentMusic && data.length > 0) {
             const firstTrack = data[0];
             const audio = new Audio();
@@ -88,28 +117,39 @@ export const MusicList = () => {
     }
   };
 
-  // Only update local state during drag to keep it smooth
-  const handleReorder = (newOrder: Music[]) => {
-    setMusics(newOrder);
-    setQueue(newOrder);
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as number);
   };
 
-  // Sync with API only when drag ends
-  const syncReorder = useCallback(async () => {
-    // Only sync if we are in priority sort mode and not searching
-    if (sortBy !== 'priority' || searchTerm) return;
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveId(null);
 
-    // Check if order actually changed
-    const orderChanged = musics.some((m, i) => m.id !== previousMusicsRef.current[i]?.id);
-    if (!orderChanged) return;
+    if (over && active.id !== over.id) {
+      const oldIndex = musics.findIndex((m) => m.id === active.id);
+      const newIndex = musics.findIndex((m) => m.id === over.id);
+
+      const newOrder = arrayMove<Music>(musics, oldIndex, newIndex);
+      
+      // Optimistic update
+      setMusics(newOrder);
+      setQueue(newOrder);
+
+      // Sync with server
+      await syncReorder(newOrder);
+    }
+  };
+
+  const syncReorder = async (newOrder: Music[]) => {
+    if (sortBy !== 'priority' || searchTerm) return;
 
     setIsSyncing(true);
     const originalOrder = [...previousMusicsRef.current];
     
     try {
       // Calculate new priorities: first item gets highest priority
-      const updates = musics.map((music, index) => {
-        const newPriority = (musics.length - index) * 10;
+      const updates = newOrder.map((music, index) => {
+        const newPriority = (newOrder.length - index);
         if (music.priority !== newPriority) {
           return { id: music.id, priority: newPriority };
         }
@@ -117,10 +157,11 @@ export const MusicList = () => {
       }).filter(Boolean) as { id: number; priority: number }[];
 
       if (updates.length > 0) {
+        // Update priorities sequentially or in parallel
         await Promise.all(updates.map(u => musicService.updateMusic(u.id, { priority: u.priority })));
         
         // Update local state with new priorities to avoid drift
-        const updatedMusics = musics.map(m => {
+        const updatedMusics = newOrder.map(m => {
           const update = updates.find(u => u.id === m.id);
           return update ? { ...m, priority: update.priority } : m;
         });
@@ -137,12 +178,11 @@ export const MusicList = () => {
     } finally {
       setIsSyncing(false);
     }
-  }, [musics, sortBy, searchTerm, setQueue]);
+  };
 
   const filteredAndSortedMusics = useMemo(() => {
     let result = [...musics];
 
-    // Search
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       result = result.filter(
@@ -150,21 +190,19 @@ export const MusicList = () => {
       );
     }
 
-    // Sort (only if not searching, as search results might break drag & drop logic)
-    // IMPORTANT: If sortBy is 'priority', we use the array order directly as it's the source of truth for custom ordering
     if (!searchTerm) {
       if (sortBy === 'name') {
         result.sort((a, b) => a.name.localeCompare(b.name));
       } else if (sortBy === 'newest') {
         result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
       }
-      // No sorting for 'priority' as the musics array order is the priority order
     }
 
     return result;
   }, [musics, searchTerm, sortBy]);
 
   const isDragEnabled = viewMode === 'list' && sortBy === 'priority' && !searchTerm;
+  const activeMusic = useMemo(() => musics.find(m => m.id === activeId), [musics, activeId]);
 
   if (loading) {
     return (
@@ -219,7 +257,6 @@ export const MusicList = () => {
           </div>
           
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
-            {/* View Toggle - Desktop */}
             <div className="hidden md:flex items-center bg-spotify-light rounded-full p-1 transition-colors">
               <button
                 onClick={() => setViewMode('grid')}
@@ -237,7 +274,6 @@ export const MusicList = () => {
               </button>
             </div>
 
-            {/* Search Bar */}
             <div className="relative group w-full sm:w-auto">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-spotify-gray group-focus-within:text-app-text transition-colors" size={18} />
               <input
@@ -249,7 +285,6 @@ export const MusicList = () => {
               />
             </div>
 
-            {/* Sort Dropdown */}
             <div className="flex items-center gap-2 bg-spotify-light rounded-full px-4 py-2 w-full sm:w-auto transition-colors">
               <SlidersHorizontal size={16} className="text-spotify-gray" />
               <select 
@@ -291,35 +326,49 @@ export const MusicList = () => {
                   <div className="hidden md:block w-12 text-right">Time</div>
                 </div>
                 
-                {isDragEnabled ? (
-                  <Reorder.Group 
-                    as="div" 
-                    axis="y" 
-                    values={filteredAndSortedMusics} 
-                    onReorder={handleReorder} 
-                    className="flex flex-col gap-1"
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  modifiers={[restrictToVerticalAxis, restrictToWindowEdges]}
+                >
+                  <SortableContext 
+                    items={filteredAndSortedMusics.map(m => m.id)}
+                    strategy={verticalListSortingStrategy}
                   >
-                    {filteredAndSortedMusics.map((music, index) => (
+                    <div className="flex flex-col gap-1">
+                      {filteredAndSortedMusics.map((music, index) => (
+                        <MusicListItem 
+                          key={music.id} 
+                          music={music} 
+                          index={index} 
+                          onDelete={handleDeleteClick}
+                          isDraggable={isDragEnabled}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+
+                  <DragOverlay dropAnimation={{
+                    sideEffects: defaultDropAnimationSideEffects({
+                      styles: {
+                        active: {
+                          opacity: '0.5',
+                        },
+                      },
+                    }),
+                  }}>
+                    {activeMusic ? (
                       <MusicListItem 
-                        key={music.id} 
-                        music={music} 
-                        index={index} 
-                        onDelete={handleDeleteClick}
-                        onDragEnd={syncReorder}
+                        music={activeMusic} 
+                        index={musics.findIndex(m => m.id === activeId)} 
                         isDraggable={true}
+                        isOverlay={true}
                       />
-                    ))}
-                  </Reorder.Group>
-                ) : (
-                  filteredAndSortedMusics.map((music, index) => (
-                    <MusicListItem 
-                      key={music.id} 
-                      music={music} 
-                      index={index} 
-                      onDelete={handleDeleteClick}
-                    />
-                  ))
-                )}
+                    ) : null}
+                  </DragOverlay>
+                </DndContext>
               </div>
             )}
           </>

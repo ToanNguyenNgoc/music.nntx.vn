@@ -2,7 +2,9 @@ import React, { memo } from 'react';
 import { Clock, Trash2, GripVertical } from 'lucide-react';
 import { Music } from '../../types';
 import { usePlayerStore } from '../../store/usePlayerStore';
-import { motion, Reorder, useDragControls } from 'motion/react';
+import { motion } from 'motion/react';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { PlayPauseButton } from '../UI/PlayPauseButton';
 import { NowPlayingIndicator } from '../UI/NowPlayingIndicator';
 
@@ -10,14 +12,29 @@ interface MusicListItemProps {
   music: Music;
   index: number;
   onDelete?: (music: Music) => void;
-  onDragEnd?: () => void;
   isDraggable?: boolean;
+  isOverlay?: boolean;
 }
 
-export const MusicListItem = memo(({ music, index, onDelete, onDragEnd, isDraggable }: MusicListItemProps) => {
+export const MusicListItem = memo(({ music, index, onDelete, isDraggable, isOverlay }: MusicListItemProps) => {
   const { currentMusic, isPlaying, isLoading, setCurrentMusic, setIsPlaying } = usePlayerStore();
-  const dragControls = useDragControls();
   
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: music.id, disabled: !isDraggable });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.3 : 1,
+    zIndex: isDragging ? 1 : 0,
+  };
+
   const isCurrent = currentMusic?.id === music.id;
   const isActive = isCurrent && isPlaying;
 
@@ -51,12 +68,13 @@ export const MusicListItem = memo(({ music, index, onDelete, onDragEnd, isDragga
   const content = (
     <div
       onClick={handleItemClick}
-      className={`group flex items-center gap-4 px-4 py-2 rounded-md hover:bg-black/5 dark:hover:bg-white/10 transition-all cursor-pointer ${isCurrent ? 'bg-black/5 dark:bg-white/5' : ''} select-none active:scale-[0.99]`}
+      className={`group flex items-center gap-4 px-4 py-2 rounded-md hover:bg-black/5 dark:hover:bg-white/10 transition-all cursor-pointer ${isCurrent ? 'bg-black/5 dark:bg-white/5' : ''} ${isOverlay ? 'bg-spotify-light shadow-2xl scale-[1.02] border border-white/10' : ''} select-none active:scale-[0.99]`}
     >
       {isDraggable && (
         <div 
           className="cursor-grab active:cursor-grabbing text-spotify-gray hover:text-app-text p-1 touch-none"
-          onPointerDown={(e) => dragControls.start(e)}
+          {...attributes}
+          {...listeners}
         >
           <GripVertical size={16} />
         </div>
@@ -102,13 +120,15 @@ export const MusicListItem = memo(({ music, index, onDelete, onDragEnd, isDragga
       </div>
 
       <div className="flex items-center gap-2 md:gap-4">
-        <button
-          onClick={handleDelete}
-          className="md:opacity-0 group-hover:opacity-100 p-2 text-spotify-gray hover:text-red-500 transition-all"
-          title="Delete"
-        >
-          <Trash2 size={16} />
-        </button>
+        {!isOverlay && (
+          <button
+            onClick={handleDelete}
+            className="md:opacity-0 group-hover:opacity-100 p-2 text-spotify-gray hover:text-red-500 transition-all"
+            title="Delete"
+          >
+            <Trash2 size={16} />
+          </button>
+        )}
 
         <span className="text-xs text-spotify-gray w-12 text-right hidden md:inline">
           <Clock size={14} className="inline mr-1 opacity-50" />
@@ -118,47 +138,19 @@ export const MusicListItem = memo(({ music, index, onDelete, onDragEnd, isDragga
     </div>
   );
 
-  if (isDraggable) {
-    return (
-      <Reorder.Item
-        value={music}
-        dragListener={false}
-        dragControls={dragControls}
-        onDragEnd={onDragEnd}
+  if (isOverlay) return content;
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <motion.div
         layout
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        whileDrag={{ 
-          scale: 1.03, 
-          backgroundColor: "rgba(40, 40, 40, 0.9)",
-          boxShadow: "0 20px 40px rgba(0,0,0,0.6)",
-          zIndex: 100,
-          cursor: "grabbing"
-        }}
-        dragElastic={0.1}
-        dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
-        transition={{ 
-          type: "spring",
-          stiffness: 500,
-          damping: 30,
-          opacity: { duration: 0.2 }
-        }}
-        className="list-none relative z-0"
+        transition={{ duration: 0.2 }}
       >
         {content}
-      </Reorder.Item>
-    );
-  }
-
-  return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.03 }}
-    >
-      {content}
-    </motion.div>
+      </motion.div>
+    </div>
   );
 });
 
