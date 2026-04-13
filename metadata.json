@@ -1,0 +1,5 @@
+{
+  "name": "Spotify Clone",
+  "description": "A modern, responsive music player inspired by Spotify with dark theme, real API integration, and smooth animations.",
+  "requestFramePermissions": []
+}

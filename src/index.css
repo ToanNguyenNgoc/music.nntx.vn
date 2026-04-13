@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme {
+  --color-spotify-green: #1db954;
+  --color-spotify-black: #121212;
+  --color-spotify-dark: #181818;
+  --color-spotify-light: #282828;
+  --color-spotify-gray: #b3b3b3;
+}
+
+@layer base {
+  body {
+    @apply bg-spotify-black text-white selection:bg-spotify-green/30;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #5a5a5a;
+    border-radius: 6px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #888;
+    background-clip: content-box;
+  }
+}
+
+.glass-effect {
+  @apply bg-white/5 backdrop-blur-md border border-white/10;
+}
+
+.spotify-gradient {
+  background: linear-gradient(to bottom, #282828 0%, #121212 100%);
+}
+
+.text-shadow {
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+@layer utilities {
+  @keyframes bounce {
+    0%, 100% { transform: scaleY(0.5); }
+    50% { transform: scaleY(1); }
+  }
+  .pause-animation {
+    animation-play-state: paused !important;
+  }
+}
