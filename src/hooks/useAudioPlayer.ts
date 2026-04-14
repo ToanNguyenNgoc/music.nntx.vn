@@ -1,13 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { usePlayerStore } from '../store/usePlayerStore';
-
-// Persistent audio instances to avoid recreation and enable preloading
-const mainAudio = new Audio();
-const preloadAudio = new Audio();
-
-// Configure instances
-mainAudio.preload = 'auto';
-preloadAudio.preload = 'auto';
+import { useMediaSession } from './useMediaSession';
+import { useKeyboardShortcuts } from './useKeyboardShortcuts';
+import { mainAudio, preloadAudio } from '../lib/audio';
 
 export const useAudioPlayer = () => {
   const {
@@ -22,6 +17,10 @@ export const useAudioPlayer = () => {
     playNext,
     getNextMusic,
   } = usePlayerStore();
+
+  // Initialize system integrations
+  useMediaSession();
+  useKeyboardShortcuts();
 
   const isInitialMount = useRef(true);
 
@@ -46,12 +45,17 @@ export const useAudioPlayer = () => {
       setIsLoading(false);
     };
 
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+
     audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
     audio.addEventListener('canplay', handleCanPlay);
     audio.addEventListener('waiting', handleWaiting);
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('error', handleError);
+    audio.addEventListener('play', handlePlay);
+    audio.addEventListener('pause', handlePause);
 
     return () => {
       audio.removeEventListener('timeupdate', handleTimeUpdate);
@@ -60,6 +64,8 @@ export const useAudioPlayer = () => {
       audio.removeEventListener('waiting', handleWaiting);
       audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('error', handleError);
+      audio.removeEventListener('play', handlePlay);
+      audio.removeEventListener('pause', handlePause);
     };
   }, []);
 
