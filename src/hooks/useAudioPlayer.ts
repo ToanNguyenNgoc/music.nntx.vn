@@ -23,11 +23,15 @@ export const useAudioPlayer = () => {
   useKeyboardShortcuts();
 
   const isInitialMount = useRef(true);
+  const isInitialSeekPending = useRef(false);
 
   useEffect(() => {
     const audio = mainAudio;
 
-    const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
+    const handleTimeUpdate = () => {
+      if (isInitialSeekPending.current) return;
+      setCurrentTime(audio.currentTime);
+    };
     const handleLoadedMetadata = () => {
       setDuration(audio.duration);
     };
@@ -81,9 +85,23 @@ export const useAudioPlayer = () => {
         setIsLoading(true);
         audio.src = currentMusic.full_media_url;
         audio.load();
+
+        // If we have a saved currentTime (e.g. from persistence), we should seek to it
+        // but only after metadata is loaded.
+        if (usePlayerStore.getState().currentTime > 0) {
+          isInitialSeekPending.current = true;
+          const handleInitialSeek = () => {
+            audio.currentTime = usePlayerStore.getState().currentTime;
+            isInitialSeekPending.current = false;
+            audio.removeEventListener('loadedmetadata', handleInitialSeek);
+          };
+          audio.addEventListener('loadedmetadata', handleInitialSeek);
+        }
       } else {
         // Same source but reference changed (e.g. restart/repeat one)
-        audio.currentTime = 0;
+        // If it's a manual restart, currentTime should be 0
+        // If it's just a re-render, we don't want to reset it
+        // The store's setCurrentMusic sets currentTime to 0 for new tracks
       }
 
       // If isPlaying is true, ensure it's playing

@@ -23,6 +23,7 @@ interface PlayerState {
   setDuration: (duration: number) => void;
   setRepeatMode: (mode: 'none' | 'one' | 'all') => void;
   setIsShuffle: (isShuffle: boolean) => void;
+  restorePlaybackState: (state: Partial<PlayerState>) => void;
   
   playNext: () => void;
   playPrevious: () => void;
@@ -61,6 +62,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
   setDuration: (duration) => set({ duration }),
   setRepeatMode: (repeatMode) => set({ repeatMode }),
   setIsShuffle: (isShuffle) => set({ isShuffle }),
+  restorePlaybackState: (state) => set((prev) => ({ ...prev, ...state })),
 
   playNext: () => {
     const { queue, currentMusic, isShuffle, repeatMode } = get();

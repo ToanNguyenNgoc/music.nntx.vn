@@ -17,6 +17,7 @@ import { LoginForm } from './components/Auth/LoginForm';
 import { RegisterForm } from './components/Auth/RegisterForm';
 import { useTitleSync } from './hooks/useTitleSync';
 import { useThemeInit } from './hooks/useThemeInit';
+import { usePlaybackPersistence } from './hooks/usePlaybackPersistence';
 
 export default function App() {
   const { isAuthenticated } = useAuthStore();
@@ -28,6 +29,9 @@ export default function App() {
 
   // Sync tab title with current music
   useTitleSync();
+
+  // Persist and restore playback state
+  usePlaybackPersistence();
 
   if (!isAuthenticated) {
     return authMode === 'login' 
