@@ -25,7 +25,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
     try {
       const response = await authService.login(email, password);
       if (response.success) {
-        setAuth(response.context.data, response.context.accessToken);
+        setAuth(response.context.data, response.context.accessToken, response.context.expiredAt);
       } else {
         setError('Invalid email or password');
       }

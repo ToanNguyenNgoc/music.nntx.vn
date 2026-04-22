@@ -133,4 +133,19 @@ export interface UpdateMusicResponse {
   path: string;
 }
 
+export interface RefreshTokenData {
+  access_token: string;
+  expired_at: string;
+}
+
+export interface RefreshTokenResponse {
+  success: boolean;
+  context: {
+    data: RefreshTokenData;
+  };
+  status: number;
+  timestamp: string;
+  path: string;
+}
+
 export type YoutubeImportStatus = 'idle' | 'converting' | 'importing' | 'imported' | 'failed';

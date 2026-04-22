@@ -42,7 +42,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
       });
       
       if (response.success) {
-        setAuth(response.context.data, response.context.accessToken);
+        setAuth(response.context.data, response.context.accessToken, response.context.expiredAt);
       } else {
         setError('Registration failed. Please try again.');
       }
